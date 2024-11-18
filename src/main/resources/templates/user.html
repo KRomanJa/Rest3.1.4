@@ -5,6 +5,26 @@
 </head>
 <body>
 <h1>User, welcome spring boot security page!</h1>
+<div style="font-size:26px;">
+    Ваш ID: <span th:text="${user.getId()}"/>
+    <br/>
+    Ваш логин: <span th:text="${user.getUsername()}"/>
+    <br/>
+    Ваш пароль: <span th:text="${user.getPassword()}"/>
+    <br/>
+    Ваш возраст: <span th:text="${user.getAge()}"/>
+    <br/>
+    Ваш email:<span th:text="${user.getEmail()}"/>
+    <br/>
+    Ваши роли: <span th:text="${user.getRoles()}"/>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+<form th:method="GET" th:action="@{/logout}">
+    <input type="submit" value="Выйти из логина"/>
+</form>
 
 
 </body>
