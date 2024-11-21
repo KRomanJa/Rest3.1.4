@@ -1,6 +1,10 @@
 package ru.kata.spring.boot_security.demo.model;
 
 
+import org.hibernate.validator.constraints.UniqueElements;
+import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.validation.Unique;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.List;
@@ -13,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Unique(message = "Логин уже используется")
     @NotEmpty(message = "Нельзя использовать пустой логин")
     @Size(min = 2, max = 30, message = "Некорректная длина логина")
     @Pattern(regexp = "^[a-zA-Z]*$", message = "Некорректный логин. Используйте только латинские символы")

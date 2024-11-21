@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,7 +33,7 @@ public class AdminController {
 
     @PostMapping("/users")
     public String createUser(@Valid @ModelAttribute("user") User user,
-                             BindingResult bindingResult, Model model) {
+                             BindingResult bindingResult,  Model model) {
         model.addAttribute("allRoles", roleService.getAllRoles());
         if (bindingResult.hasErrors()) {
             return "new";
