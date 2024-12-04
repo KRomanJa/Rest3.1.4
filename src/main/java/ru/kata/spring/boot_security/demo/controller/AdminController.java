@@ -59,7 +59,7 @@ public class AdminController {
     public String updateUser(@Valid @ModelAttribute("user") User user,
                              BindingResult bindingResult, @RequestParam("id") Long id, Model model) {
         model.addAttribute("allRoles", roleService.getAllRoles());
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() && !userService.findUserById(id).getUsername().equals(user.getUsername())) {
             return "edit";
         }
         userService.updateUserById(id, user);
