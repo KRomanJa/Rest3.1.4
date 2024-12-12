@@ -43,7 +43,7 @@ private String name;
 
     @Override
     public String toString() {
-        return this.getName();
+        return this.getName().substring(5);
     }
 
     @Override

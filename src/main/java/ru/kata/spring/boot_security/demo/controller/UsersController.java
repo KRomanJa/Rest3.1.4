@@ -28,8 +28,8 @@ public class UsersController {
     }
 
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public String login() {
+        return "redirect:/login";
     }
 
     @GetMapping("/user")
