@@ -31,6 +31,8 @@ public class AdminController {
         model.addAttribute("users", userService.allUsers());
         model.addAttribute("newUser", new User());
         model.addAttribute("allRoles", roleService.getAllRoles());
+        model.addAttribute("showCreate", false);
+        model.addAttribute("showEdit", false);
         return "admin";
     }
 
@@ -38,7 +40,7 @@ public class AdminController {
     public String editAdmin(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @ModelAttribute("user") User user,
                             BindingResult bindingResult, @RequestParam("id") Long id, Model model) {
         User currentUser = userService.findUserById(id);
-        if (!currentUser.getUsername().equalsIgnoreCase(myUserDetails.getUsername())) {
+        if (!currentUser.getUsername().equalsIgnoreCase(user.getUsername())) {
             if (userService.findByUsername(user.getUsername()) != null) {
                 bindingResult.rejectValue("username", "error.user", "Логин уже используется");
             }
@@ -49,17 +51,33 @@ public class AdminController {
             model.addAttribute("admin", userService.findByUsername(myUserDetails.getUsername()));
             model.addAttribute("newUser", new User());
             model.addAttribute("allRoles", roleService.getAllRoles());
-            model.addAttribute("showModal", true);
+            model.addAttribute("showEdit", true);
+            model.addAttribute("showCreate", false);
             return "admin";
+        } else {
+            model.addAttribute("showEdit", false);
+            model.addAttribute("showCreate", false);
         }
         userService.updateUserById(id, user);
         return "redirect:/admin";
     }
 
     @PostMapping("/create")
-    public String createAdmin(@Valid @ModelAttribute("user") User user, BindingResult bindingResult) {
+    public String createAdmin(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @ModelAttribute("newUser") User user,
+                              BindingResult bindingResult, Model model) {
+        if (userService.findByUsername(user.getUsername()) != null) {
+            bindingResult.rejectValue("username", "error.user", "Логин уже используется");
+        }
         if (bindingResult.hasErrors()) {
+            model.addAttribute("users", userService.allUsers());
+            model.addAttribute("admin", userService.findByUsername(myUserDetails.getUsername()));
+            model.addAttribute("allRoles", roleService.getAllRoles());
+            model.addAttribute("showCreate", true);
+            model.addAttribute("showEdit", false);
             return "admin";
+        } else {
+            model.addAttribute("showCreate", false);
+            model.addAttribute("showEdit", false);
         }
         userService.saveUser(user);
         return "redirect:/admin";
