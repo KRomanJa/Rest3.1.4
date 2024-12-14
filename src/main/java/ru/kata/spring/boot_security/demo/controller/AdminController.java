@@ -12,7 +12,6 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
@@ -36,8 +35,15 @@ public class AdminController {
     }
 
     @PostMapping("/edit")
-    public String editAdmin(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @ModelAttribute("user") User user, BindingResult bindingResult, @RequestParam("id") Long id, Model model) {
-        if (bindingResult.hasErrors() && !userService.findUserById(id).getUsername().equals(user.getUsername())) {
+    public String editAdmin(@AuthenticationPrincipal MyUserDetails myUserDetails, @Valid @ModelAttribute("user") User user,
+                            BindingResult bindingResult, @RequestParam("id") Long id, Model model) {
+        User currentUser = userService.findUserById(id);
+        if (!currentUser.getUsername().equalsIgnoreCase(myUserDetails.getUsername())) {
+            if (userService.findByUsername(user.getUsername()) != null) {
+                bindingResult.rejectValue("username", "error.user", "Логин уже используется");
+            }
+        }
+        if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult);
             model.addAttribute("users", userService.allUsers());
             model.addAttribute("admin", userService.findByUsername(myUserDetails.getUsername()));
