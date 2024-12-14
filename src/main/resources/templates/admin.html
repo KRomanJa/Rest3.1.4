@@ -97,18 +97,22 @@
                                         <label for="username" class="form-label fw-bold">Логин</label>
                                         <input type="text" class="form-control" th:field="*{username}" id="username"
                                                placeholder="логин"/>
+                                        <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                                         <br/>
                                         <label for="age" class="from-label fw-bold">Возраст</label>
-                                        <input type="text" class="form-control" th:field="*{age}" id="age"
+                                        <input type="number" class="form-control" th:field="*{age}" id="age"
                                                placeholder="возраст"/>
+                                        <div style="color:red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></div>
                                         <br/>
                                         <label for="email" class="form-label fw-bold">email</label>
                                         <input type="text" class="form-control" th:field="*{email}" id="email"
                                                placeholder="email"/>
+                                        <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                                         <br/>
                                         <label for="password" class="form-label fw-bold">Пароль</label>
                                         <input type="text" class="form-control" th:field="*{password}" id="password"
                                                placeholder="пароль"/>
+                                        <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                                         <br/>
                                         <label class="form-label fw-bold">Роли</label>
                                         <select class="form-select" size="2" multiple
@@ -118,6 +122,7 @@
                                                     th:value="${role.id}"
                                             ></option>
                                         </select>
+                                        <div style="color:red" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
                                         <br/>
                                         <input class="btn btn-success btn-lg" type="submit" value="Добавить"/>
                                     </form>
@@ -167,9 +172,9 @@
         </div>
     </div>
 </div>
-<div th:each="user : ${users}">
-    <div class="modal fade" th:id="'modal' + ${user.id}" tabindex="-1" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
+<div th:each="editUser : ${users}">
+    <div class="modal fade" th:id="'modal' + ${editUser.id}" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true" th:attr="data-user-id=${editUser.getId()}">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -180,34 +185,49 @@
                 </div>
                 <div class="modal-body">
                     <form th:method="PATCH" th:action="@{/admin/edit}" style="margin-top:40px">
-                        <input type="hidden" name="id" th:value="${user.id}"/>
+                        <input type="hidden" name="id" th:value="${editUser.id}"/>
                         <label for="editId" class="form-label fw-bold">ID</label>
-                        <input type="text" class="form-control" th:value="*{user.id}" id="editId" readonly/>
+                        <input type="text" class="form-control" th:value="*{editUser.id}" id="editId" readonly/>
                         <br/>
                         <label for="editUsername" class="form-label fw-bold">Логин</label>
-                        <input type="text" name="username" class="form-control" th:value="*{user.username}"
+                        <input type="text" name="username" class="form-control" th:value="*{editUser.username}"
                                id="editUsername" placeholder="логин"/>
+                        <div style="color:red" th:if="${errors != null && errors.hasFieldErrors('username')}">
+                            <span th:text="${errors.getFieldError('username').defaultMessage}"></span>
+                        </div>
                         <br/>
                         <label for="editAge" class="from-label fw-bold">Возраст</label>
-                        <input type="number" name="age" class="form-control" th:value="*{user.age}" id="editAge"
+                        <input type="number" name="age" class="form-control" th:value="*{editUser.age}" id="editAge"
                                placeholder="возраст"/>
+                        <div style="color:red" th:if="${errors != null && errors.hasFieldErrors('age')}">
+                            <span th:text="${errors.getFieldError('age').defaultMessage}"></span>
+                        </div>
                         <br/>
                         <label for="editEmail" class="form-label fw-bold">email</label>
-                        <input type="text" name="email" class="form-control" th:value="*{user.email}" id="editEmail"
+                        <input type="text" name="email" class="form-control" th:value="*{editUser.email}" id="editEmail"
                                placeholder="email"/>
+                        <div style="color:red" th:if="${errors != null && errors.hasFieldErrors('email')}">
+                            <span th:text="${errors.getFieldError('email').defaultMessage}"></span>
+                        </div>
                         <br/>
                         <label for="editPassword" class="form-label fw-bold">Пароль</label>
-                        <input type="text" name="password" class="form-control" th:value="*{user.password}"
+                        <input type="text" name="password" class="form-control" th:value="*{editUser.password}"
                                id="editPassword" placeholder="пароль"/>
+                        <div style="color:red" th:if="${errors != null && errors.hasFieldErrors('password')}">
+                            <span th:text="${errors.getFieldError('password').defaultMessage}"></span>
+                        </div>
                         <br/>
                         <label class="form-label fw-bold">Роли</label>
                         <select class="form-select" name="roles" size="2" multiple aria-label="multiple select example">
                             <option th:each="role : ${allRoles}"
                                     th:text="${role.name.substring(5)}"
                                     th:value="${role.id}"
-                                    th:selected="${user.roles.contains(role)}"
+                                    th:selected="${editUser.roles.contains(role)}"
                             ></option>
                         </select>
+                        <div style="color:red" th:if="${errors != null && errors.hasFieldErrors('roles')}">
+                            <span th:text="${errors.getFieldError('roles').defaultMessage}"></span>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Edit</button>
@@ -218,7 +238,7 @@
         </div>
     </div>
 
-    <div class="modal fade" th:id="'modalDelete' + ${user.getId()}" tabindex="-1"
+    <div class="modal fade" th:id="'modalDelete' + ${editUser.getId()}" tabindex="-1"
          aria-labelledby="exampleModalLabelDelete" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -230,26 +250,26 @@
                 </div>
                 <div class="modal-body">
                     <form th:method="DELETE" th:action="@{/admin/delete}" style="margin-top:40px">
-                        <input type="hidden" name="id" th:value="${user.id}"/>
-                        <label for="editId" class="form-label fw-bold">ID</label>
-                        <input type="text" class="form-control" th:value="*{user.id}" id="deleteId" readonly/>
+                        <input type="hidden" name="id" th:value="${editUser.id}"/>
+                        <label for="deleteId" class="form-label fw-bold">ID</label>
+                        <input type="text" class="form-control" th:value="*{editUser.id}" id="deleteId" readonly/>
                         <br/>
-                        <label for="editUsername" class="form-label fw-bold">Логин</label>
-                        <input type="text" class="form-control" th:value="*{user.username}" id="deleteUsername"
+                        <label for="deleteUsername" class="form-label fw-bold">Логин</label>
+                        <input type="text" class="form-control" th:value="*{editUser.username}" id="deleteUsername"
                                readonly/>
                         <br/>
-                        <label for="editAge" class="from-label fw-bold">Возраст</label>
-                        <input type="text" class="form-control" th:value="*{user.age}" id="deleteAge" readonly/>
+                        <label for="deleteAge" class="from-label fw-bold">Возраст</label>
+                        <input type="text" class="form-control" th:value="*{editUser.age}" id="deleteAge" readonly/>
                         <br/>
-                        <label for="editEmail" class="form-label fw-bold">email</label>
-                        <input type="text" class="form-control" th:value="*{user.email}" id="deleteEmail" readonly/>
+                        <label for="deleteEmail" class="form-label fw-bold">email</label>
+                        <input type="text" class="form-control" th:value="*{editUser.email}" id="deleteEmail" readonly/>
                         <br/>
                         <label class="form-label fw-bold">Роли</label>
                         <select class="form-select" size="2" multiple aria-label="multiple select example" disabled>
                             <option th:each="role : ${allRoles}"
                                     th:text="${role.name.substring(5)}"
                                     th:value="${role.id}"
-                                    th:selected="${user.roles.contains(role)}"
+                                    th:selected="${editUser.roles.contains(role)}"
                             ></option>
                         </select>
                         <div class="modal-footer">
