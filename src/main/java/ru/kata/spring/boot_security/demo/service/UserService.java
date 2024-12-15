@@ -56,7 +56,9 @@ public class UserService implements UserDetailsService {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             userOptional.get().setUsername(user.getUsername());
-            userOptional.get().setPassword(passwordEncoder.encode(user.getPassword()));
+            if (!userOptional.get().getPassword().equals(user.getPassword())) {
+                userOptional.get().setPassword(passwordEncoder.encode(user.getPassword()));
+            }
             userOptional.get().setEmail(user.getEmail());
             userOptional.get().setAge(user.getAge());
             userOptional.get().setRoles(user.getRoles());
